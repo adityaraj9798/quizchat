@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function Dashboard() {
   const [analytics, setAnalytics] = useState(null);
@@ -6,39 +7,51 @@ export default function Dashboard() {
   useEffect(() => {
     fetch('http://127.0.0.1:8000/api/analytics')
       .then(res => res.json())
-      .then(data => setAnalytics(data))
-      .catch(err => console.error("Error fetching analytics", err));
+      .then(data => setAnalytics(data));
   }, []);
 
-  if (!analytics) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500 font-medium">Loading stats...</p>
-      </div>
-    );
-  }
+  if (!analytics) return <div className="p-6 text-center text-gray-500">Loading dashboard...</div>;
+
+  const chartData = [
+    { name: 'Served', count: analytics.questions_served },
+    { name: 'Answered', count: analytics.questions_answered }
+  ];
 
   return (
-    <div className="p-6 h-full bg-gray-50 flex flex-col items-center justify-center">
-      <h2 className="text-2xl font-bold mb-8 text-gray-800">Your Performance</h2>
+    <div className="p-6 h-full bg-gray-50 overflow-y-auto">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">Analytics Dashboard</h2>
       
-      <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-        <div className="bg-white p-4 rounded-2xl text-center shadow-sm border border-gray-100">
-          <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Answered</p>
-          <p className="text-3xl font-bold text-blue-600 mt-2">{analytics.total_answered}</p>
+      {/* Analytics (5 calculated!) */}
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="bg-white p-4 rounded-xl shadow-sm border">
+          <p className="text-xs text-gray-500 font-bold uppercase">Avg Response</p>
+          <p className="text-2xl font-bold text-blue-600 mt-1">{analytics.average_response_time}s</p>
         </div>
-        
-        <div className="bg-white p-4 rounded-2xl text-center shadow-sm border border-gray-100">
-          <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Correct</p>
-          <p className="text-3xl font-bold text-green-500 mt-2">{analytics.correct_answers}</p>
+        <div className="bg-white p-4 rounded-xl shadow-sm border">
+          <p className="text-xs text-gray-500 font-bold uppercase">Completion Rate</p>
+          <p className="text-2xl font-bold text-green-500 mt-1">{analytics.quiz_completion_rate}%</p>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border">
+          <p className="text-xs text-gray-500 font-bold uppercase">Drop-offs</p>
+          <p className="text-2xl font-bold text-red-500 mt-1">{analytics.drop_offs}</p>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border">
+          <p className="text-xs text-gray-500 font-bold uppercase">Qs Answered</p>
+          <p className="text-2xl font-bold text-purple-600 mt-1">{analytics.questions_answered}</p>
         </div>
       </div>
 
-      <div className="mt-6 bg-white p-6 rounded-2xl w-full max-w-sm text-center shadow-sm border border-gray-100">
-        <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Overall Score</p>
-        <p className="text-5xl font-extrabold text-purple-600 mt-3">
-          {analytics.overall_score_percentage}%
-        </p>
+      {/* Bonus Chart visualization */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border h-48">
+        <h3 className="text-sm font-bold text-gray-700 mb-4">Question Funnel</h3>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData}>
+            <XAxis dataKey="name" fontSize={12} />
+            <YAxis fontSize={12} />
+            <Tooltip cursor={{fill: '#f3f4f6'}} />
+            <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
