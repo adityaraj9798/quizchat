@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from pydantic import BaseModel
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = FastAPI(title="QuizChat API")
 
@@ -101,10 +101,21 @@ def get_analytics():
     completion_rate = round((completed_sessions / total_sessions * 100), 2) if total_sessions > 0 else 0
     drop_offs = total_sessions - completed_sessions
     
+    avg_qs_per_session = round(answered_count / total_sessions, 2) if total_sessions > 0 else 0
+    
+    yesterday = (datetime.utcnow() - timedelta(days=1)).isoformat()
+    dau_pipeline = [
+        {"$match": {"start_time": {"$gte": yesterday}}},
+        {"$group": {"_id": "$user_id"}}
+    ]
+    dau = len(list(db["quiz_sessions"].aggregate(dau_pipeline)))
+
     return {
         "questions_answered": answered_count,
         "questions_served": served_count,
         "average_response_time": avg_time_sec,
         "quiz_completion_rate": completion_rate,
-        "drop_offs": drop_offs
+        "drop_offs": drop_offs,
+        "average_questions_per_session": avg_qs_per_session,
+        "daily_active_users": dau
     }

@@ -21,8 +21,8 @@ export default function Dashboard() {
     <div className="p-6 h-full bg-gray-50 overflow-y-auto">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Analytics Dashboard</h2>
       
-      {/* Analytics (5 calculated!) */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      {/* Analytics (7 calculated!) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-white p-4 rounded-xl shadow-sm border">
           <p className="text-xs text-gray-500 font-bold uppercase">Avg Response</p>
           <p className="text-2xl font-bold text-blue-600 mt-1">{analytics.average_response_time}s</p>
@@ -38,6 +38,14 @@ export default function Dashboard() {
         <div className="bg-white p-4 rounded-xl shadow-sm border">
           <p className="text-xs text-gray-500 font-bold uppercase">Qs Answered</p>
           <p className="text-2xl font-bold text-purple-600 mt-1">{analytics.questions_answered}</p>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border">
+          <p className="text-xs text-gray-500 font-bold uppercase">Avg Qs/Session</p>
+          <p className="text-2xl font-bold text-yellow-500 mt-1">{analytics.average_questions_per_session}</p>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border">
+          <p className="text-xs text-gray-500 font-bold uppercase">Daily Active Users</p>
+          <p className="text-2xl font-bold text-indigo-500 mt-1">{analytics.daily_active_users}</p>
         </div>
       </div>
 
