@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from pydantic import BaseModel
 import uuid
+import os
 from datetime import datetime, timedelta
 
 app = FastAPI(title="QuizChat API")
@@ -17,7 +18,8 @@ app.add_middleware(
 )
 
 # MongoDB Connection
-client = MongoClient("mongodb://localhost:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
 db = client["quizchat_db"]
 
 # Pydantic models for request validation

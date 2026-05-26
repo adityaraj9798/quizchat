@@ -10,15 +10,17 @@ export default function QuizChat() {
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [shownTimestamp, setShownTimestamp] = useState(null);
+  
+  const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/flow')
+    fetch(`${API_URL}/api/flow`)
       .then(res => res.json())
       .then(data => setFlow(data));
   }, []);
 
   const startQuiz = async (chapterId) => {
-    const res = await fetch(`http://127.0.0.1:8000/api/chapters/${chapterId}/questions`);
+    const res = await fetch(`${API_URL}/api/chapters/${chapterId}/questions`);
     const data = await res.json();
     setSession(data.session_id);
     setQuestions(data.questions);
@@ -32,7 +34,7 @@ export default function QuizChat() {
     const submittedTime = new Date();
     const duration = submittedTime.getTime() - new Date(shownTimestamp).getTime();
 
-    await fetch('http://127.0.0.1:8000/api/submit', {
+    await fetch(`${API_URL}/api/submit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -51,7 +53,7 @@ export default function QuizChat() {
       setSelectedOption(null);
       setShownTimestamp(new Date().toISOString());
     } else {
-      await fetch(`http://127.0.0.1:8000/api/sessions/${session}/complete`, { method: 'POST' });
+      await fetch(`${API_URL}/api/sessions/${session}/complete`, { method: 'POST' });
       setStep('result');
     }
   };
